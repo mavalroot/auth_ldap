@@ -64,13 +64,13 @@ class LDAP
      */
     public function checkGroup()
     {
-        $filter = "(&(uid=$this->user)(memberof=OU=grupos,CN=migrupo,$this->basedn))";
-        echo var_dump($filter);
+        $filter = "(&(CN=migrupo)(member=uid=$this->user,ou=personas,$this->basedn))";
+        // echo var_dump($filter);
         $searchResult = ldap_search($this->ldap, $this->basedn, $filter);
-        echo var_dump($searchResult);
+        // echo var_dump($searchResult);
         $entries = ldap_get_entries($this->ldap, $searchResult);
-        echo var_dump($entries);
-        $member = $entries["count"] > 0;
+        // echo var_dump($entries);
+        $member = $entries['count'] > 0;
         return $member;
     }
 }
