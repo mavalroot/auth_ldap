@@ -62,9 +62,9 @@ class LDAP
      * Comprueba que el usuario está o no en un grupo.
      * @return bool
      */
-    public function checkGroup()
+    public function checkGroup($group = 'migrupo')
     {
-        $filter = "(&(CN=migrupo)(member=uid=$this->user,ou=personas,$this->basedn))";
+        $filter = "(&(CN=$group)(member=uid=$this->user,ou=personas,$this->basedn))";
         // echo var_dump($filter);
         $searchResult = ldap_search($this->ldap, $this->basedn, $filter);
         // echo var_dump($searchResult);
