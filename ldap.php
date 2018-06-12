@@ -24,7 +24,7 @@ class LDAP
      * Unidad organizativa en la que están los usuarios.
      * @var string
      */
-    private $userOrg = 'usuarios';
+    private $userOrg = 'usuarios2';
     /**
      * Host del servidor LDAP.
      * @var string.
@@ -145,7 +145,7 @@ class LDAP
     private function assign($val, $name)
     {
         if ($val) {
-            $this->$name = $val;
+            $this->$name = $this->sanitize($val);
         }
     }
 
