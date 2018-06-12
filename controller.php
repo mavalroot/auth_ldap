@@ -21,11 +21,7 @@ class LdapController
             return;
         }
         $ldap = $this->ldap;
-        try {
-            $ldap->login($username, $password);
-        } catch (\Exception $e) {
-            die('Error: ' . $e->getMessage());
-        }
+        $ldap->login($username, $password);
         $_SESSION['username'] = $ldap->getUsername();
         $_SESSION['group'] = $ldap->getGroup();
         $ldap->desconectar();

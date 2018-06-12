@@ -6,7 +6,15 @@ include_once 'ldap.php';
 
 $ldap = new LDAP();
 $controller = new LdapController($ldap);
-$controller->login();
+try {
+    $controller->login();
+} catch (\Exception $e) {
+    ?>
+        <div>
+            <?= 'Error: ' . $e->getMessage() ?>
+        </div>
+    <?php
+}
 
 var_dump($_SESSION);
 ?>
