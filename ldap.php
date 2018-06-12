@@ -243,6 +243,8 @@ class LDAP
 
     public function login($username, $password)
     {
+        $username = $this->sanitize($username);
+        $password = $this->sanitize($password);
         $this->bind($username, $password);
         return $this->getPermission();
     }
@@ -274,5 +276,15 @@ class LDAP
         $this->user = null;
         $this->pass = null;
         return true;
+    }
+
+    /**
+     * [sanitize description]
+     * @param  [type] $var [description]
+     * @return [type]      [description]
+     */
+    private function sanitize($var)
+    {
+        return ldap_escape($var, null, LDAP_ESCAPE_FILTER);
     }
 }
