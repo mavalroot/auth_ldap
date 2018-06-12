@@ -279,9 +279,10 @@ class LDAP
     }
 
     /**
-     * [sanitize description]
-     * @param  [type] $var [description]
-     * @return [type]      [description]
+     * Sanitiza los datos recogidos del cliente que vayan a ser introducidos
+     * en LDAP para prevenir inyección de código.
+     * @param  string $var Variable a escapar
+     * @return string
      */
     private function sanitize($var)
     {
