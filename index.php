@@ -7,8 +7,9 @@ try {
     $ldap->conectar();
     $ldap->bind('user1', '123456');
     var_dump($ldap->checkGroup('hola'));
-    $ldap->desconectar();
-    var_dump($ldap->checkGroup());
+    // $ldap->desconectar();
+    $ldap->getPermission();
+    var_dump($ldap->getGroup());
 } catch (\Exception $e) {
     die('Error: ' . $e->getMessage());
 }
