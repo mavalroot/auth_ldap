@@ -210,15 +210,15 @@ class LDAP
     /**
      * Comprueba que el usuario está o no en un grupo.
      *
-     * @return bool
-     * @throws Exception Si no hay un usuario y contraseña bindeado.
+     * @return bool Falso si no está en el grupo (o no se pudo comprobar)
+     * o verdadero si sí lo está.
      */
     public function checkGroup($group = 'grupo1', $organization = 'grupos2')
     {
-        $filter = "(&(objectClass=person)(cn=$this->user)(memberOf=cn=$group,ou=$organization,$this->basedn))";
         if (!$this->binded) {
             return false;
         }
+        $filter = "(&(objectClass=person)(cn=$this->user)(memberOf=cn=$group,ou=$organization,$this->basedn))";
         $searchResult = ldap_search($this->ldap, $this->basedn, $filter);
         $entries = ldap_get_entries($this->ldap, $searchResult);
         return $entries['count'] > 0;
@@ -226,9 +226,11 @@ class LDAP
 
     /**
      * Obtiene el permiso del usuario.
-     * @return void
+     *
+     * @return bool Verdadero si se obtuvo un grupo.
+     * @throws Exception Si no pertenece a ningún grupo.
      */
-    public function getPermission()
+    private function getPermission()
     {
         foreach ($this->permissions() as $group => $org) {
             if ($this->checkGroup($group, $org)) {
@@ -236,15 +238,15 @@ class LDAP
                 return true;
             }
         }
-        return false;
+        throw new \Exception('No se pudo comprobar la pertenencia a ningún Grupo.', 1);
     }
 
     public function login()
     {
-        if (isset($_POST['username'], $_POST['password'])) {
-            $this->bind($_POST['username'], $_POST['password']);
-            $this->getPermission();
-        }
+        // if (isset($_POST['username'], $_POST['password'])) {
+        // $this->bind($_POST['username'], $_POST['password']);
+        return $this->getPermission();
+        // }
     }
 
     /**
