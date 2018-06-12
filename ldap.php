@@ -241,12 +241,10 @@ class LDAP
         throw new \Exception('No se pudo comprobar la pertenencia a ningún Grupo.', 1);
     }
 
-    public function login()
+    public function login($username, $password)
     {
-        // if (isset($_POST['username'], $_POST['password'])) {
-        // $this->bind($_POST['username'], $_POST['password']);
+        $this->bind($username, $password);
         return $this->getPermission();
-        // }
     }
 
     /**
