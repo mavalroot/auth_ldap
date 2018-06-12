@@ -3,6 +3,12 @@
 include_once 'ldap.php';
 
 $ldap = new LDAP();
-$ldap->conectar();
-var_dump($ldap->bind('juan', '123456'));
-var_dump($ldap->checkGroup('hola'));
+try {
+    $ldap->conectar();
+    $ldap->bind('user1', '123456');
+    var_dump($ldap->checkGroup('hola'));
+    $ldap->desconectar();
+    var_dump($ldap->checkGroup());
+} catch (\Exception $e) {
+    die('Error: ' . $e->getMessage());
+}
