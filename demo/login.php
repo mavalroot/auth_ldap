@@ -2,10 +2,10 @@
 session_start();
 
 include_once 'controller.php';
-include_once 'ldap.php';
+include_once '../LDAP.php';
 
 $ldap = new LDAP();
-$controller = new LdapController($ldap);
+$controller = new LDAPController($ldap);
 try {
     $controller->login();
 } catch (\Exception $e) {
@@ -15,8 +15,6 @@ try {
         </div>
     <?php
 }
-
-var_dump($_SESSION);
 ?>
 
 <form action="" method="post">

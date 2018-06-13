@@ -1,52 +1,64 @@
 <?php
 
 /**
+ * @author María Valderrama Rodríguez <contact@mavalroot.es>
+ * @copyright Copyright (c) 2018, María Valderrama Rodríguez
+ *
  * Clase para manejar la autenticación contra un servidor LDAP.
  */
 class LDAP
 {
     /**
      * Nombre de usuario.
+     *
      * @var string
      */
     protected $user;
     /**
      * Contraseña del usuario.
+     *
      * @var string
      */
     protected $pass;
     /**
      * Grupo al que pertenecería el usuario $user.
+     *
      * @var string
      */
     protected $group;
     /**
      * Unidad organizativa en la que están los usuarios.
+     *
      * @var string
      */
-    protected $userOrg;
+    protected $userOrg = 'GRUPO (OU) DE LOS USUARIOS';
     /**
      * Host del servidor LDAP.
+     *
      * @var string.
      */
-    protected $host;
+    protected $host = 'HOST';
     /**
      * Puerto del servidor LDAP.
+     *
      * @var string
      */
-    protected $port;
+    protected $port = 'PUERTO';
     /**
-     * DN Base.
+     * DN Base. Por ejemplo: 'dc=uno, dc=dos'.
+     *
      * @var string
      */
-    protected $basedn;
+    protected $basedn = 'DN BASE';
     /**
      * Conexión con el servidor LDAP.
+     *
      * @var resource|bool
      */
     protected $ldap = false;
     /**
      * Indica si se ha ligado con un usuario y contraseña o no.
+     *
      * @var bool
      */
     protected $binded = false;
@@ -54,20 +66,22 @@ class LDAP
 
     /**
      * Constructor de nuestra clase. Se le puede pasar una configuración
-     * opcional por si se quisiera modificar los valores de conexión por
-     * defecto.
+     * opcional por si se quisiera modificar los valores de conexión definidos
+     * en la clase.
      *
      * @param array $config Configuración para inicializar el objeto. Acepta:
-     * 'host', 'port' y 'basedn'.
+     * 'host', 'port', 'basedn' y 'userOrg'.
      */
     public function __construct($config = [])
     {
         $host = false;
         $port = false;
         $basedn = false;
+        $userOrg = false;
         extract($config, EXTR_IF_EXISTS);
         $this->setHost($host);
         $this->setPort($port);
+        $this->setUserOrg($userOrg);
         $this->setBasedn($basedn);
     }
 
@@ -85,20 +99,16 @@ class LDAP
      * ]
      *
      */
-    public function permissions()
+    protected function permissions()
     {
         return [
-            'admin' => 'inventario',
-            'normal' => 'inventario',
-            'editor' => 'inventario',
-            'lector' => 'inventario',
-            'invitado' => 'inventario',
-            'grupo1' => 'grupos2',
+
         ];
     }
 
     /**
      * Establece un valor para la propiedad host.
+     *
      * @param string|false $val El nuevo valor para host. Si es false no se hará
      * el cambio.
      */
@@ -109,6 +119,7 @@ class LDAP
 
     /**
      * Establece un valor para la propiedad port.
+     *
      * @param string|false $val El nuevo valor para port. Si es false no se hará
      * el cambio.
      */
@@ -119,6 +130,7 @@ class LDAP
 
     /**
      * Establece un valor para la propiedad basedn.
+     *
      * @param string|bool $val El nuevo valor para basedn. Si es false no se
      * hará el cambio.
      */
@@ -129,6 +141,7 @@ class LDAP
 
     /**
      * Establece un valor para la propiedad group.
+     *
      * @param string|bool $val El nuevo valor para group. Si es false no se
      * hará el cambio.
      */
@@ -138,7 +151,19 @@ class LDAP
     }
 
     /**
+     * Establece un valor para la propiedad userOrg.
+     *
+     * @param string|bool $val El nuevo valor para userOrg. Si es false no se
+     * hará el cambio.
+     */
+    public function setUserOrg($val)
+    {
+        $this->assign($val, 'userOrg');
+    }
+
+    /**
      * Asigna un valor a una propiedad si dicho valor no es falso.
+     *
      * @param  string|false $val  Valor que se asigna.
      * @param  string       $name Nombre de la variable.
      */
@@ -151,6 +176,7 @@ class LDAP
 
     /**
      * Devuelve el valor de la propiedad group.
+     *
      * @return string Grupo al que pertenece.
      */
     public function getGroup()
@@ -160,6 +186,7 @@ class LDAP
 
     /**
      * Devuelve el valor de la propiedad user.
+     *
      * @return string Nombre de usuario.
      */
     public function getUsername()
@@ -185,7 +212,9 @@ class LDAP
      *
      * @param  string $user Nombre de usuario.
      * @param  string $pass Contraseña.
+     *
      * @return bool
+     *
      * @throws \Exception Si no se pudo hacer la conexión.
      */
     public function bind($user, $pass)
@@ -196,7 +225,7 @@ class LDAP
         ldap_set_option($this->ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($this->ldap, LDAP_OPT_REFERRALS, 0);
         if ($this->ldap) {
-            $bind = ldap_bind($this->ldap, "cn={$user},ou={$this->userOrg},{$this->basedn}", $pass);
+            $bind = @ldap_bind($this->ldap, "cn={$user},ou={$this->userOrg},{$this->basedn}", $pass);
             if ($bind) {
                 $this->user = $user;
                 $this->pass = $pass;
@@ -204,7 +233,7 @@ class LDAP
                 return true;
             }
         }
-        throw new \Exception('No se pudo conectar al servidor.', 1);
+        throw new \Exception('El nombre de usuario o la contraseña son incorrectos.', 1);
     }
 
     /**
@@ -232,6 +261,7 @@ class LDAP
      * Obtiene el permiso del usuario.
      *
      * @return bool Verdadero si se obtuvo un grupo.
+     *
      * @throws \Exception Si no pertenece a ningún grupo.
      */
     protected function getPermission()
@@ -248,8 +278,10 @@ class LDAP
     /**
      * Hace un login. El login se considera correcto si se obtuvo un permiso
      * (grupo).
+     *
      * @param  string $username Nombre de usuario del servidor LDAP.
      * @param  string $password Contraseña del servidor LDAP.
+     *
      * @return bool
      */
     public function login($username, $password)
@@ -292,7 +324,9 @@ class LDAP
     /**
      * Sanitiza los datos recogidos del cliente que vayan a ser introducidos
      * en LDAP para prevenir inyección de código.
-     * @param  string $var Variable a escapar
+     *
+     * @param  string $var Variable a escapar.
+     *
      * @return string
      */
     protected function sanitize($var)
