@@ -2,6 +2,8 @@
 
 Clase para manejar un servidor LDAP + PHP.
 
+Ver la [Api](http://mavalroot.github.io/auth_ldap/).
+
 ## Estructura
 
 La clase LDAP está pensada para manejar un Active Directory que tenga la siguiente estructura:
