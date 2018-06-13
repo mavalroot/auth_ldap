@@ -24,22 +24,22 @@ class LDAP
      * Unidad organizativa en la que están los usuarios.
      * @var string
      */
-    private $userOrg = 'usuarios2';
+    private $userOrg;
     /**
      * Host del servidor LDAP.
      * @var string.
      */
-    private $host = '192.168.0.104';
+    private $host;
     /**
      * Puerto del servidor LDAP.
      * @var string
      */
-    private $port = '389';
+    private $port;
     /**
      * DN Base.
      * @var string
      */
-    private $basedn = 'dc=cementeriochipiona,dc=com';
+    private $basedn;
     /**
      * Conexión con el servidor LDAP.
      * @var resource|bool
@@ -57,7 +57,7 @@ class LDAP
      * opcional por si se quisiera modificar los valores de conexión por
      * defecto.
      *
-     * @var array $config Configuración para inicializar el objeto. Acepta:
+     * @param array $config Configuración para inicializar el objeto. Acepta:
      * 'host', 'port' y 'basedn'.
      */
     public function __construct($config = [])
@@ -170,7 +170,7 @@ class LDAP
     /**
      * Hace la conexión a un servidor LDAP.
      *
-     * @throws Exception Si no se pudo hacer la conexión.
+     * @throws \Exception Si no se pudo hacer la conexión.
      */
     public function conectar()
     {
@@ -186,7 +186,7 @@ class LDAP
      * @param  string $user Nombre de usuario.
      * @param  string $pass Contraseña.
      * @return bool
-     * @throws Exception Si no se pudo hacer la conexión.
+     * @throws \Exception Si no se pudo hacer la conexión.
      */
     public function bind($user, $pass)
     {
@@ -210,10 +210,14 @@ class LDAP
     /**
      * Comprueba que el usuario está o no en un grupo.
      *
+     * @param string $group Nombre del grupo que se comprueba que pertenece.
+     * @param string $organization Nombre de la unidad organizativa (ou) a la
+     * que pertenece el grupo.
+     *
      * @return bool Falso si no está en el grupo (o no se pudo comprobar)
      * o verdadero si sí lo está.
      */
-    public function checkGroup($group = 'grupo1', $organization = 'grupos2')
+    public function checkGroup($group, $organization)
     {
         if (!$this->binded) {
             return false;
@@ -228,7 +232,7 @@ class LDAP
      * Obtiene el permiso del usuario.
      *
      * @return bool Verdadero si se obtuvo un grupo.
-     * @throws Exception Si no pertenece a ningún grupo.
+     * @throws \Exception Si no pertenece a ningún grupo.
      */
     private function getPermission()
     {
@@ -241,6 +245,13 @@ class LDAP
         throw new \Exception('No se pudo comprobar la pertenencia a ningún Grupo.', 1);
     }
 
+    /**
+     * Hace un login. El login se considera correcto si se obtuvo un permiso
+     * (grupo).
+     * @param  string $username Nombre de usuario del servidor LDAP.
+     * @param  string $password Contraseña del servidor LDAP.
+     * @return bool
+     */
     public function login($username, $password)
     {
         $username = $this->sanitize($username);
