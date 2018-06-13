@@ -9,47 +9,47 @@ class LDAP
      * Nombre de usuario.
      * @var string
      */
-    private $user;
+    protected $user;
     /**
      * Contraseña del usuario.
      * @var string
      */
-    private $pass;
+    protected $pass;
     /**
      * Grupo al que pertenecería el usuario $user.
      * @var string
      */
-    private $group;
+    protected $group;
     /**
      * Unidad organizativa en la que están los usuarios.
      * @var string
      */
-    private $userOrg;
+    protected $userOrg;
     /**
      * Host del servidor LDAP.
      * @var string.
      */
-    private $host;
+    protected $host;
     /**
      * Puerto del servidor LDAP.
      * @var string
      */
-    private $port;
+    protected $port;
     /**
      * DN Base.
      * @var string
      */
-    private $basedn;
+    protected $basedn;
     /**
      * Conexión con el servidor LDAP.
      * @var resource|bool
      */
-    private $ldap = false;
+    protected $ldap = false;
     /**
      * Indica si se ha ligado con un usuario y contraseña o no.
      * @var bool
      */
-    private $binded = false;
+    protected $binded = false;
 
 
     /**
@@ -102,7 +102,7 @@ class LDAP
      * @param string|false $val El nuevo valor para host. Si es false no se hará
      * el cambio.
      */
-    private function setHost($val)
+    protected function setHost($val)
     {
         $this->assign($val, 'host');
     }
@@ -112,7 +112,7 @@ class LDAP
      * @param string|false $val El nuevo valor para port. Si es false no se hará
      * el cambio.
      */
-    private function setPort($val)
+    protected function setPort($val)
     {
         $this->assign($val, 'port');
     }
@@ -122,7 +122,7 @@ class LDAP
      * @param string|bool $val El nuevo valor para basedn. Si es false no se
      * hará el cambio.
      */
-    private function setBasedn($val)
+    protected function setBasedn($val)
     {
         $this->assign($val, 'host');
     }
@@ -142,7 +142,7 @@ class LDAP
      * @param  string|false $val  Valor que se asigna.
      * @param  string       $name Nombre de la variable.
      */
-    private function assign($val, $name)
+    protected function assign($val, $name)
     {
         if ($val) {
             $this->$name = $this->sanitize($val);
@@ -234,7 +234,7 @@ class LDAP
      * @return bool Verdadero si se obtuvo un grupo.
      * @throws \Exception Si no pertenece a ningún grupo.
      */
-    private function getPermission()
+    protected function getPermission()
     {
         foreach ($this->permissions() as $group => $org) {
             if ($this->checkGroup($group, $org)) {
@@ -295,7 +295,7 @@ class LDAP
      * @param  string $var Variable a escapar
      * @return string
      */
-    private function sanitize($var)
+    protected function sanitize($var)
     {
         return ldap_escape($var, null, LDAP_ESCAPE_FILTER);
     }
