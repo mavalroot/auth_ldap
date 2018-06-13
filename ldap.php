@@ -35,7 +35,7 @@ class LDAP
     /**
      * Host del servidor LDAP.
      *
-     * @var string.
+     * @var string
      */
     protected $host = 'HOST';
     /**
